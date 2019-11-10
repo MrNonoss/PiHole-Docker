@@ -1,0 +1,41 @@
+version: '2'
+
+services:
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    hostname: pihole
+    domainname: test.xyz # change this
+    mac_address: xx:xx:xx:xx:xx:xx # change this
+    cap_add:
+      - NET_ADMIN
+    networks:
+      pihole_network:
+        ipv4_address: 192.168.X.X # change this
+    dns:
+      - 127.0.0.1
+    ports:
+      - 443/tcp
+      - 53/tcp
+      - 53/udp
+      - 67/udp
+      - 80/tcp
+    environment:
+      TZ: 'Europe/Paris' # change this
+      WEBPASSWORD: "password"  # change this
+    volumes:
+      - '${PWD}/etc/pihole/:/etc/pihole/'
+      - '${PWD}/etc/dnsmasq.d/:/etc/dnsmasq.d/'
+      - '${PWD}/etc/hosts:/etc/hosts'
+    restart: unless-stopped
+
+networks:
+  pihole_network:
+    driver: macvlan
+    driver_opts:
+      parent: eth0 # change this
+    ipam:
+      config:
+        - subnet: 192.168.x.0/24 # change this
+          gateway: 192.168.x.1 # change this
+          ip_range: 192.168.x.0/24 # change this
